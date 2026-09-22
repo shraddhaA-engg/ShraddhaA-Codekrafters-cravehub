@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CraveHub | Food Ordering</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#ff5a36;--dark:#202124;--cream:#fff7f2;--muted:#6b7280;--white:#fff;--border:#eee;--shadow:0 12px 35px rgba(0,0,0,.09)}
+body{font-family:Inter,Arial,sans-serif;background:#fafafa;color:var(--dark);line-height:1.5}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.top{background:#202124;color:#fff;text-align:center;padding:8px;font-size:14px}
+nav{position:sticky;top:0;z-index:20;background:#fff;box-shadow:0 3px 15px #0000000d;padding:14px 6%;display:flex;align-items:center;gap:24px}
+.logo{font-size:25px;font-weight:900;color:var(--primary)}
+.navlinks{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.navlinks button,.cat{background:transparent;padding:9px 13px;border-radius:20px}
+.navlinks button:hover,.cat:hover,.cat.active{background:var(--primary);color:#fff}
+.hero{min-height:390px;padding:70px 7%;display:flex;align-items:center;color:#fff;background:linear-gradient(90deg,#000b,transparent),url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1600&q=85') center/cover}
+.hero h1{font-size:clamp(38px,6vw,68px);max-width:650px;line-height:1.05}
+.hero p{margin:18px 0;font-size:18px;max-width:580px}
+.btn{background:var(--primary);color:#fff;padding:12px 19px;border-radius:12px;font-weight:700;transition:.2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(.95)}
+.outline{background:#fff;color:var(--primary)}
+main{max-width:1250px;margin:auto;padding:38px 5%}
+.search{display:flex;gap:10px;margin-bottom:22px}
+.search input{width:100%;padding:14px 18px;border:1px solid var(--border);border-radius:13px}
+.categories{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px}
+.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);transition:.25s;position:relative}
+.card:hover{transform:translateY(-7px)}
+.foodimg{height:185px;width:100%;object-fit:cover}
+.cardbody{padding:17px}
+.card h3{font-size:19px}
+.desc{color:var(--muted);font-size:14px;margin:7px 0 13px;min-height:42px}
+.price{font-weight:800;font-size:18px;color:var(--primary)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.heart{position:absolute;top:12px;right:12px;background:#fff;border-radius:50%;width:38px;height:38px;font-size:20px;box-shadow:0 4px 15px #0002}
+.heart.on{color:#e11d48}
+.badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin:30px 0}
+.badge{background:var(--cream);padding:18px;border-radius:15px;text-align:center}
+.badge b{display:block;font-size:20px;color:var(--primary);margin-bottom:4px}
+section{scroll-margin-top:90px}
+footer{background:#202124;color:#ddd;padding:35px 7%;margin-top:40px;text-align:center}
+.overlay{position:fixed;inset:0;background:#0008;z-index:50;display:none}
+.overlay.show{display:block}
+.panel{background:#fff;width:min(520px,94%);max-height:90vh;overflow:auto;position:absolute;right:0;top:0;height:100%;padding:25px}
+.modal{background:#fff;width:min(650px,94%);max-height:90vh;overflow:auto;border-radius:20px;padding:25px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.close{float:right;background:#eee;border-radius:50%;width:34px;height:34px}
+.cartitem{display:flex;gap:12px;padding:15px 0;border-bottom:1px solid var(--border)}
+.cartitem img{width:70px;height:70px;object-fit:cover;border-radius:10px}
+.qty{display:flex;gap:7px;align-items:center;margin-top:7px}
+.qty button{width:28px;height:28px;border-radius:7px;background:#eee}
+.total{font-size:21px;font-weight:900;margin:20px 0}
+.form{display:grid;gap:12px;margin-top:15px}
+.form input,.form select,.form textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px}
+.notice{background:#fff5ed;border-left:4px solid var(--primary);padding:12px;margin:15px 0;border-radius:8px}
+.timeline{display:flex;justify-content:space-between;gap:5px;margin:30px 0;position:relative}
+.step{text-align:center;flex:1;font-size:12px;color:#999}
+.dot{width:28px;height:28px;border-radius:50%;background:#ddd;margin:auto auto 8px}
+.step.done .dot,.step.current .dot{background:var(--primary)}
+.step.done,.step.current{color:var(--primary);font-weight:700}
+.review{border-bottom:1px solid #eee;padding:13px 0}
+.stars{color:#f59e0b;font-size:20px}
+.small{font-size:13px;color:var(--muted)}
+.hidden{display:none}
+@media(max-width:700px){nav{padding:12px 4%;}.navlinks{margin-left:0}.hero{padding:55px 7%}.hero h1{font-size:43px}.panel{width:100%}}
+</style>
+</head>
+<body>
+
+<div class="top">🎉 Birthday month? Get ₹150 OFF! &nbsp; | &nbsp; Tag @CraveHub on social media and get 5% OFF your next order.</div>
+
+<nav>
+  <div class="logo">🍕 CraveHub</div>
+  <div class="navlinks">
+    <button onclick="scrollToMenu()">Menu</button>
+    <button onclick="openFav()">❤️ Favourites</button>
+    <button onclick="openNotifications()">🔔 Notifications</button>
+    <button onclick="openOrders()">📦 Orders</button>
+    <button onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1>Good food.<br>Good mood. 😋</h1>
+    <p>Freshly prepared favourites delivered to your door. Explore, order and enjoy.</p>
+    <button class="btn" onclick="scrollToMenu()">Explore Menu</button>
+  </div>
+</header>
+
+<main>
+<section id="menu">
+  <div class="search">
+    <input id="search" placeholder="🔎 Search pizza, burger, pasta..." oninput="renderFoods()">
+    <button class="btn" onclick="openCart()">🛒 Cart</button>
+  </div>
+
+  <h2>Explore Categories</h2>
+  <div class="categories" id="categories"></div>
+  <div class="grid" id="foodGrid"></div>
+
+  <div class="badges">
+    <div class="badge"><b>🎂 Birthday Reward</b>₹150 OFF during your birthday month</div>
+    <div class="badge"><b>📱 Social Tag Reward</b>Tag @CraveHub and get 5% OFF next order</div>
+    <div class="badge"><b>🎁 Gift Cards</b>Send CraveHub credit to friends & family</div>
+    <div class="badge"><b>⭐ Rate & Review</b>Share your experience after ordering</div>
+  </div>
+</section>
+</main>
+
+<footer>© 2026 CraveHub • Fresh food, happy people 🍕</footer>
+
+<!-- Cart -->
+<div class="overlay" id="cartOverlay" onclick="closeIf(event,'cartOverlay')">
+ <div class="panel">
+  <button class="close" onclick="closeBox('cartOverlay')">×</button>
+  <h2>🛒 Your Cart</h2>
+  <div id="cartItems"></div>
+  <div class="total">Total: ₹<span id="cartTotal">0</span></div>
+  <button class="btn" style="width:100%" onclick="openCheckout()">Proceed to Checkout</button>
+ </div>
+</div>
+
+<!-- Checkout -->
+<div class="overlay" id="checkoutOverlay" onclick="closeIf(event,'checkoutOverlay')">
+ <div class="modal">
+  <button class="close" onclick="closeBox('checkoutOverlay')">×</button>
+  <h2>Checkout</h2>
+  <div class="notice">🎂 Birthday discount: ₹150 OFF | 📱 Social-tag reward: 5% OFF next order</div>
+  <div class="form">
+   <input id="name" placeholder="Full name">
+   <input id="phone" placeholder="Phone number">
+   <textarea id="address" placeholder="Delivery address"></textarea>
+   <select id="payment"><option>UPI (Demo)</option><option>Card (Demo)</option><option>Cash on Delivery</option></select>
+   <input id="coupon" placeholder="Coupon: BIRTHDAY150 or SOCIAL5">
+   <button class="btn" onclick="placeOrder()">Place Order</button>
+  </div>
+  <p class="small" style="margin-top:10px">Demo checkout only — no real payment is processed.</p>
+ </div>
+</div>
+
+<!-- Tracking -->
+<div class="overlay" id="trackOverlay" onclick="closeIf(event,'trackOverlay')">
+ <div class="modal">
+  <button class="close" onclick="closeBox('trackOverlay')">×</button>
+  <h2>📦 Live Order Tracking</h2>
+  <p id="trackId"></p>
+  <div class="timeline" id="timeline"></div>
+  <div class="notice"><b id="trackStatus">Order Placed</b><br><span id="eta">Estimated delivery: 30–40 min</span></div>
+  <button class="btn" onclick="openReview()">⭐ Rate this order</button>
+ </div>
+</div>
+
+<!-- Generic feature modal -->
+<div class="overlay" id="featureOverlay" onclick="closeIf(event,'featureOverlay')">
+ <div class="modal">
+  <button class="close" onclick="closeBox('featureOverlay')">×</button>
+  <div id="featureContent"></div>
+ </div>
+</div>
+
+<script>
+const foods=[
+{id:1,name:"Margherita Pizza",cat:"Pizza",price:299,desc:"Tomato, mozzarella and fresh basil.",img:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=700&q=80"},
+{id:2,name:"Spicy Chicken Burger",cat:"Burgers",price:249,desc:"Crispy chicken, lettuce and spicy sauce.",img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80"},
+{id:3,name:"Creamy Alfredo Pasta",cat:"Pasta",price:279,desc:"Creamy sauce, herbs and parmesan.",img:"https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=700&q=80"},
+{id:4,name:"Chocolate Lava Cake",cat:"Desserts",price:159,desc:"Warm chocolate cake with molten centre.",img:"https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=700&q=80"},
+{id:5,name:"Loaded Veggie Pizza",cat:"Pizza",price:349,desc:"Bell peppers, onions, olives and cheese.",img:"https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=700&q=80"},
+{id:6,name:"Classic Cheeseburger",cat:"Burgers",price:229,desc:"Juicy patty, cheddar, lettuce and sauce.",img:"https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=700&q=80"},
+{id:7,name:"Strawberry Shake",cat:"Drinks",price:149,desc:"Creamy strawberry milkshake.",img:"https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=700&q=80"},
+{id:8,name:"Iced Coffee",cat:"Drinks",price:129,desc:"Chilled coffee with creamy foam.",img:"https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=700&q=80"},
+{id:9,name:"Penne Arrabbiata",cat:"Pasta",price:249,desc:"Penne tossed in spicy tomato sauce.",img:"https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=700&q=80"},
+{id:10,name:"Classic Tiramisu",cat:"Desserts",price:189,desc:"Coffee-soaked layers with mascarpone.",img:"https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=700&q=80"}
+];
+
+let cart=JSON.parse(localStorage.getItem("ch_cart")||"[]");
+let fav=JSON.parse(localStorage.getItem("ch_fav")||"[]");
+let orders=JSON.parse(localStorage.getItem("ch_orders")||"[]");
+let reviews=JSON.parse(localStorage.getItem("ch_reviews")||"[]");
+let category="All", currentOrder=null, trackTimer=null;
+
+function save(){localStorage.setItem("ch_cart",JSON.stringify(cart));localStorage.setItem("ch_fav",JSON.stringify(fav));localStorage.setItem("ch_orders",JSON.stringify(orders));localStorage.setItem("ch_reviews",JSON.stringify(reviews))}
+function money(n){return Math.max(0,n).toLocaleString("en-IN")}
+function scrollToMenu(){document.getElementById("menu").scrollIntoView({behavior:"smooth"})}
+function renderCategories(){
+ const cats=["All",...new Set(foods.map(x=>x.cat))];
+ document.getElementById("categories").innerHTML=cats.map(c=>`<button class="cat ${category===c?'active':''}" onclick="category='${c}';renderCategories();renderFoods()">${c}</button>`).join("");
+}
+function renderFoods(){
+ let q=document.getElementById("search").value.toLowerCase();
+ let list=foods.filter(x=>(category==="All"||x.cat===category)&&(x.name+" "+x.desc).toLowerCase().includes(q));
+ document.getElementById("foodGrid").innerHTML=list.map(x=>`
+ <article class="card">
+  <img class="foodimg" src="${x.img}" alt="${x.name}">
+  <button class="heart ${fav.includes(x.id)?'on':''}" onclick="toggleFav(${x.id})">${fav.includes(x.id)?'♥':'♡'}</button>
+  <div class="cardbody">
+   <h3>${x.name}</h3><p class="desc">${x.desc}</p>
+   <div class="row"><span class="price">₹${x.price}</span><button class="btn" onclick="addCart(${x.id})">Add to Cart</button></div>
+  </div>
+ </article>`).join("");
+}
+function addCart(id){let x=cart.find(i=>i.id===id);x?x.qty++:cart.push({id,qty:1});save();renderCart();toast("Added to cart 🛒")}
+function changeQty(id,d){let x=cart.find(i=>i.id===id);if(!x)return;x.qty+=d;if(x.qty<=0)cart=cart.filter(i=>i.id!==id);save();renderCart()}
+function renderCart(){
+ let total=0,count=0;
+ document.getElementById("cartItems").innerHTML=cart.length?cart.map(i=>{let x=foods.find(f=>f.id===i.id);total+=x.price*i.qty;count+=i.qty;return `<div class="cartitem"><img src="${x.img}"><div style="flex:1"><b>${x.name}</b><br>₹${x.price}<div class="qty"><button onclick="changeQty(${x.id},-1)">−</button>${i.qty}<button onclick="changeQty(${x.id},1)">+</button></div></div></div>`}).join(""):"<p style='margin-top:20px'>Your cart is empty.</p>";
+ document.getElementById("cartTotal").textContent=money(total);document.getElementById("cartCount").textContent=count;
+}
+function openCart(){renderCart();document.getElementById("cartOverlay").classList.add("show")}
+function openCheckout(){if(!cart.length){toast("Add something to your cart first!");return}closeBox("cartOverlay");document.getElementById("checkoutOverlay").classList.add("show")}
+function toggleFav(id){fav.includes(id)?fav=fav.filter(x=>x!==id):fav.push(id);save();renderFoods();toast(fav.includes(id)?"Added to favourites ❤️":"Removed from favourites")}
+function openFav(){let list=foods.filter(x=>fav.includes(x.id));showFeature(`<h2>❤️ Favourites</h2>${list.length?list.map(x=>`<div class="cartitem"><img src="${x.img}"><div><b>${x.name}</b><br>₹${x.price}<br><button class="btn" style="margin-top:7px" onclick="addCart(${x.id})">Add to Cart</button></div></div>`).join(""):"<p>No favourites yet.</p>"`)}
+function placeOrder(){
+ if(!cart.length)return;
+ let coupon=document.getElementById("coupon").value.trim().toUpperCase();
+ let subtotal=cart.reduce((s,i)=>s+foods.find(f=>f.id===i.id).price*i.qty,0);
+ let discount=coupon==="BIRTHDAY150"?150:(coupon==="SOCIAL5"?Math.round(subtotal*.05):0);
+ let order={id:"CH"+Math.floor(10000+Math.random()*90000),items:cart.map(i=>({...i})),subtotal,discount,total:Math.max(0,subtotal-discount),status:0,date:new Date().toLocaleString(),name:document.getElementById("name").value||"Guest"};
+ orders.unshift(order);currentOrder=order;cart=[];save();closeBox("checkoutOverlay");openTracking();toast("Order placed successfully 🎉");
+}
+const statuses=["Order Placed","Preparing","Out for Delivery","Delivered"];
+function openTracking(){
+ if(!currentOrder)currentOrder=orders[0];
+ if(!currentOrder){toast("No order to track.");return}
+ document.getElementById("trackOverlay").classList.add("show");updateTracking();
+ clearInterval(trackTimer);
+ trackTimer=setInterval(()=>{if(currentOrder.status<3){currentOrder.status++;orders[0]=currentOrder;save();updateTracking()}else clearInterval(trackTimer)},5000);
+}
+function updateTracking(){
+ document.getElementById("trackId").textContent="Order ID: "+currentOrder.id;
+ document.getElementById("timeline").innerHTML=statuses.map((s,i)=>`<div class="step ${i<currentOrder.status?'done':''} ${i===currentOrder.status?'current':''}"><div class="dot"></div>${s}</div>`).join("");
+ document.getElementById("trackStatus").textContent=statuses[currentOrder.status];
+ document.getElementById("eta").textContent=currentOrder.status===3?"Delivered successfully!":"Estimated delivery: "+(30-currentOrder.status*10)+"–"+(40-currentOrder.status*10)+" min";
+}
+function openOrders(){
+ let content=`<h2>📦 Order History</h2>`;
+ content+=orders.length?orders.map((o,i)=>`<div class="review"><b>${o.id}</b> • ${o.date}<br>${o.items.length} item(s) • ₹${o.total}<br>Status: ${statuses[o.status]}<br><button class="btn" style="margin-top:8px" onclick="currentOrder=orders[${i}];closeBox('featureOverlay');openTracking()">Track</button></div>`).join(""):"<p>No orders yet.</p>";
+ showFeature(content)
+}
+function openReview(){
+ closeBox("trackOverlay");
+ showFeature(`<h2>⭐ Rate Your Order</h2><p class="small">Your feedback helps CraveHub improve.</p>
+ <div class="form"><select id="rating"><option value="5">⭐⭐⭐⭐⭐ — Excellent</option><option value="4">⭐⭐⭐⭐ — Good</option><option value="3">⭐⭐⭐ — Average</option><option value="2">⭐⭐ — Poor</option><option value="1">⭐ — Very poor</option></select>
+ <textarea id="reviewText" placeholder="Write your review..."></textarea><button class="btn" onclick="submitReview()">Submit Review</button></div>
+ <hr style="margin:25px 0"><h3>Recent Reviews</h3>${reviews.map(r=>`<div class="review"><span class="stars">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</span><br>${r.text||"No written comment."}</div>`).join("")||"<p class='small'>No reviews yet.</p>"}`)
+}
+function submitReview(){let rating=+document.getElementById("rating").value,text=document.getElementById("reviewText").value;reviews.unshift({rating,text});save();toast("Thanks for your rating! ⭐");closeBox("featureOverlay")}
+function openNotifications(){showFeature(`<h2>🔔 Notifications</h2><div class="notice">🎂 Birthday month offer: use <b>BIRTHDAY150</b> for ₹150 OFF.</div><div class="notice">📱 Tag @CraveHub on social media and use <b>SOCIAL5</b> for 5% OFF your next order.</div><div class="notice">🎁 Gift cards are now available!</div><div class="notice">🚚 Track your latest order from the Orders section.</div>`)}
+function openGift(){showFeature(`<h2>🎁 Gift Card</h2><p>Give the gift of good food.</p><div class="form"><input id="giftName" placeholder="Recipient name"><input id="giftAmount" type="number" placeholder="Gift card amount ₹"><button class="btn" onclick="toast('Gift card created! 🎁');closeBox('featureOverlay')">Create Demo Gift Card</button></div><p class="small">Demo feature — no real payment is processed.</p>`)}
+function showFeature(html){document.getElementById("featureContent").innerHTML=html+`<div style="margin-top:25px"><button class="btn" onclick="openGift()">🎁 Gift Card</button></div>`;document.getElementById("featureOverlay").classList.add("show")}
+function closeBox(id){document.getElementById(id).classList.remove("show")}
+function closeIf(e,id){if(e.target.id===id)closeBox(id)}
+function toast(msg){let t=document.createElement("div");t.textContent=msg;t.style.cssText="position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#202124;color:white;padding:13px 20px;border-radius:12px;z-index:100;font-weight:700";document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+renderCategories();renderFoods();renderCart();
+</script>
+</body>
+</html>
+commit- "first working version"
